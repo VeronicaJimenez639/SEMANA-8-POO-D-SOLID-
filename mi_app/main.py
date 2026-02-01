@@ -149,4 +149,3 @@ def main() -> None:
 if __name__ == "__main__":
     main()  # punto de entrada cuando se ejecuta: python main.py
 
-
