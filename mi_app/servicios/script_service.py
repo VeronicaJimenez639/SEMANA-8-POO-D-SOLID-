@@ -49,27 +49,18 @@ class ScriptService:
         # encoding="utf-8" ayuda con caracteres especiales (tildes)
         # errors="replace" evita que el programa se caiga si hay algún símbolo raro
         return ruta_script.read_text(encoding="utf-8", errors="replace")
+    
 
     def ejecutar(self, ruta_script: Path) -> None:
-        """
-        Ejecuta el script con el Python del entorno actual.
+    python_exe = sys.executable  # Python del entorno actual (el mismo que usa tu proyecto)
+    script_path = str(ruta_script)  # convierto Path a texto para pasarlo a subprocess
 
-        ¿Por qué sys.executable?
-        - Para que se ejecute con el mismo Python con el que estás ejecutando tu proyecto.
-          (Por ejemplo, si estás usando un entorno virtual)
+    if os.name == "nt":  # si es Windows
+        subprocess.Popen(
+            [python_exe, script_path],  # ejecuta: python script.py (sin cmd, evita problemas por espacios)
+            creationflags=subprocess.CREATE_NEW_CONSOLE  # abre una consola nueva para ver la salida
+        )
+    else:  # Linux / Mac
+        subprocess.Popen([python_exe, script_path])  # ejecuta normal
 
-        En Windows:
-        - Se abre una ventana CMD y se mantiene abierta para ver la salida.
-        En otros sistemas:
-        - Se ejecuta normalmente (en segundo plano).
-        """
-        # Python del entorno actual (más seguro que poner "python" a mano)
-        python_exe = sys.executable
-
-        # En Windows (os.name == "nt") usamos cmd /k para que la consola se quede abierta
-        if os.name == "nt":
-            subprocess.Popen(["cmd", "/k", python_exe, str(ruta_script)])
-        else:
-            # En Linux/Mac se ejecuta con el intérprete actual
-            subprocess.Popen([python_exe, str(ruta_script)])
 
